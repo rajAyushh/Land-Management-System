@@ -131,5 +131,5 @@ elif n==9:
     #clear sql database
     pass
 else:
-    print("Kindly choose between 1 to 7")
+    print("Kindly choose between 1 to 9")
     exit
