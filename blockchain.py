@@ -72,6 +72,7 @@ class Block:
         timestamp = datetime.now(pytz.timezone('Asia / Calcutta'))
         #pushes all of the transaction details into sql MusicMG
         trxnId = self.transactionHashCalculator(self, buyerId, sellerId, propertyId, amount, timestamp)
+        #put trxnID to pool for merkel root calculation
 
     
     def transactionHashCalculator(self, buyerId, sellerId, propertyId, amount, timestamp):
