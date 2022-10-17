@@ -87,8 +87,15 @@ class Block:
         timestamp = datetime.now(pytz.timezone('Asia / Calcutta'))
         self.transactionsList.append(Block.transactionHashCalculator(self, buyerId, sellerId, propertyId, amount, timestamp))
         
+        stake = mycursor.execute("SELECT stake FROM witness WHERE publicKey = 'sellerId'")
+        id1 = mycursor.execute("SELECT propertyId_1 FROM witness WHERE publicKey = 'sellerId'")
+        stake2 = mycursor.execute("SELECT stake FROM witness WHERE publicKey = 'buyerId'")
+        stake += stake2
+        # print(stake,id1)
+        mycursor.execute("UPDATE witness SET stake = NULL, propertyId_1 = NULL WHERE publicKey = 'sellerId'")
+        mycursor.execute("UPDATE witness SET stake = 'stake', propertyId_2 = 'id1' WHERE publicKey = 'buyerId'")
+        
         mycursor.execute("DELETE stake, propertyId FROM witness WHERE publicKey='sellerId'")
-    #here need to add a query that adds the deleted stake and propertyId to buyerID
         mycursor.execute(f"""INSERT INTO transactions(buyer, seller, property_id, timestamp) 
         
         values({buyerId},
