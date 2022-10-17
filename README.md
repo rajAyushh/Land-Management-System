@@ -187,6 +187,8 @@ MySQL provides standards-based drivers for JDBC, ODBC, and .Net enabling develop
 
 MySQL Connectors provide connectivity to the MySQL server for client programs. APIs provide low-level access to MySQL resources using either the classic MySQL protocol or X Protocol.
 
+Here,in this project we have used mycursor.execute() function to use MYSQL queires inside python code. our database is uploaded in the repository i.e. Land_database.mwb where we have linked this to our file to operate various operations.
+
 
 
 ![38417f69-bceb-4a9e-8303-0c5bbfef2255](https://user-images.githubusercontent.com/87355361/196243007-28472a6d-8336-4acb-a8da-e264b777509c.jpg)
