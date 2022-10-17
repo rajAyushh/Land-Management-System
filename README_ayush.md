@@ -36,13 +36,16 @@ Basic functionalities of our program-
 
 9.	Clear
 
- 
+ <img width="468" alt="image" src="https://user-images.githubusercontent.com/87355361/196222686-8d03bbd5-57c3-4df1-a27a-678a0356bb50.png">
 
 
 All the methods are properly defined in the Blockchain class of blockchain.py
  
+ <img width="468" alt="image" src="https://user-images.githubusercontent.com/87355361/196222731-fcded486-1729-4390-8073-c710b0422663.png">
+
 
 Delegated Proof of Stake (DPoS) algorithm
+
 Delegated proof of stake (DPoS) is a verification and consensus mechanism in the blockchain . It competes with other proof of work and proof of stake models as a way to verify transactions and promote blockchain organization.
 A trustworthy, strong, scalable, and effective consensus method for blockchain technology is DPoS. It is an improvement above the common Proof of Stake (PoS). In DPoS, each node with a stake in the system has the ability to vote to assign other nodes the responsibility of validating transactions.
 Here, in DPoS ,user's vote weight is proportional to their stake rather than block mining being tied to the stakeholders' total tokens.
@@ -50,52 +53,66 @@ Here, in DPoS ,user's vote weight is proportional to their stake rather than blo
 Implementation of DPoS in Land Management System's Blockchain
 
 ●	Implemented the option to be a witness if the user wants (DPOS)
+
+<img width="435" alt="image" src="https://user-images.githubusercontent.com/87355361/196222815-37b13057-657f-4f68-b255-258c9a56e05b.png">
  
 ●	New transaction dpos implementation-
+
+<img width="415" alt="image" src="https://user-images.githubusercontent.com/87355361/196222900-aa78710c-9024-41ea-bfb3-bc923af1f1bc.png">
+
  
 ●	A simple program to print the list of all witnessess.
- 
 
+<img width="468" alt="image" src="https://user-images.githubusercontent.com/87355361/196222949-f83fea56-0090-49de-8f99-4e52f92addd9.png">
 
- 
-
-
-
-
+<img width="472" alt="image" src="https://user-images.githubusercontent.com/87355361/196223012-6f4e5250-10b4-4563-bc31-be4e16cd0639.png">
 
 
 
 Methods in blockchain.py
+
 ●	We made a class named block and implemented the features in it.
 
 ●	Following is the basic skeleton of the block for initialising a new transaction.
  
+<img width="432" alt="image" src="https://user-images.githubusercontent.com/87355361/196223049-9897f848-1d18-4c0d-a32b-bf6ffcf956ab.png">
 
 
 ●	Resgister a new user (Basic feature)
 
+ <img width="468" alt="image" src="https://user-images.githubusercontent.com/87355361/196223089-8918e992-dfb5-4e5a-8f0c-2e5f1ff02072.png">
+
  
 ●	The following is responsible for adding a new transaction. This takes buyer id, seller id, property id and timestamp as input. (Basic feature)
 
+<img width="468" alt="image" src="https://user-images.githubusercontent.com/87355361/196223125-6144c830-74e8-4ca5-8ce0-ddab32289965.png">
  
-
-
 
 ●	We used the following code for getting the hash of the transaction. We made a transaction hash calculator. For this we used inbult python library and function. ( hashlib.sha256 )  
  
+ <img width="468" alt="image" src="https://user-images.githubusercontent.com/87355361/196223175-b6af8384-f6e8-4dc5-bb76-34410232f2d6.png">
+
 
 
 ●	What is the SHA-256 Algorithm?
+
 ●	SHA 256 is a part of the SHA 2 family of algorithms, where SHA stands for Secure Hash Algorithm. Published in 2001, it was a joint effort between the NSA and NIST to introduce a successor to the SHA 1 family, which was slowly losing strength against brute force attacks.
 ●	The significance of the 256 in the name stands for the final hash digest value, i.e. irrespective of the size of plaintext/cleartext, the hash value will always be 256 bits.
+
+<img width="363" alt="image" src="https://user-images.githubusercontent.com/87355361/196223199-945aaff9-cd24-406b-9da8-f63f1601a797.png">
 
 
  
 Merkle Tree
+
 In cryptography and computer science, a hash tree or Merkle tree is a tree in which every "leaf" (node) is labelled with the cryptographic hash of a data block, and every node that is not a leaf (called a branch, inner node, or inode) is labelled with the cryptographic hash of the labels of its child nodes. A hash tree allows efficient and secure verification of the contents of a large data structure. A hash tree is a generalization of a hash list and a hash chain.
 Demonstrating that a leaf node is a part of a given binary hash tree requires computing a number of hashes proportional to the logarithm of the number of leaf nodes in the tree. Conversely, in a hash list, the number is proportional to the number of leaf nodes itself. A Merkle tree is therefore an efficient example of a cryptographic commitment scheme, in which the root of the tree is seen as a commitment and leaf nodes may be revealed and proven to be part of the original commitment.
  
+ <img width="341" alt="image" src="https://user-images.githubusercontent.com/87355361/196223257-9db17a09-03dd-43b8-beac-a8554de51fa3.png">
+
+ 
 Merkle Tree Implementation
+
 We implemented a merkle tree hash function that takes our transaction object as input and produces a hash of the same.
  
 
