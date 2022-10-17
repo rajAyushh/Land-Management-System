@@ -14,7 +14,10 @@ Team members - (Group 48)
 2.	Manan Gupta (2020A2PS2420H)
 3.	Anant Kumar (2020A3PS2211H)
 4.	Saksham Sinha (2020AA0421H)
+
+
 Basic functionalities of our program-
+
 1.	Register New User
 
 2.	View Transaction History
