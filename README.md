@@ -1,6 +1,9 @@
-Blockchain Project Assignment  1
+#Blockchain Project Assignment  1
 
-Objective
+
+
+##Objective
+
 ●	This assignment to build a land management system with the following features:
 1.	To register new users to the system with previously owned property
 2.	The user should be able to buy and sell the property.
@@ -9,32 +12,36 @@ Objective
 5.	To be able to view the transaction history that is related to a property.
 ●	This assignment focuses on implementing the consensus algorithm - Delegated Proof of Stake.
 
-Team members - (Group 48)
+
+
+##Team members - (Group 48)
+
 1.	Ayush Raj (2020AAPS0439H)
 2.	Manan Gupta (2020A2PS2420H)
 3.	Anant Kumar (2020A3PS2211H)
 4.	Saksham Sinha (2020AA0421H)
 
 
-Basic functionalities of our program-
 
-1.	Register New User
+###Basic functionalities of our program-
 
-2.	View Transaction History
+##1.	Register New User
 
-3.	Vote for Witness
+##2.	View Transaction History
 
-4.	Witness Registration
+##3.	Vote for Witness
 
-5.	Buy property
+##4.	Witness Registration
 
-6.	Sell property
+##5.	Buy property
 
-7.	Mint Block
+##6.	Sell property
 
-8.	Exit
+##7.	Mint Block
 
-9.	Clear
+##8.	Exit
+
+##9.	Clear
 
  <img width="468" alt="image" src="https://user-images.githubusercontent.com/87355361/196222686-8d03bbd5-57c3-4df1-a27a-678a0356bb50.png">
 
