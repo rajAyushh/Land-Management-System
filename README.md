@@ -165,6 +165,10 @@ Demonstrating that a leaf node is a part of a given binary hash tree requires co
 # Merkle Tree Implementation
 
 We implemented a merkle tree hash function that takes our transaction object as input and produces a hash of the same.
+We take the transaction IDs and hadh them. After that we add them in an array and values from that array are passed in Merkle tree Code.
+In the Merkle Tree function we are checking if the leaf nodes are even or odd and replicate in case of odd.
+After that 2 nested for loops are used to combine every 2 hashes at every layer and give a hash that is again used to combine with other hash.
+In such way we keep combining hashes until root is reached, and that hash is returned in the end as Merkle Root.
 
 
 <img width="407" alt="image" src="https://user-images.githubusercontent.com/87355361/196225062-24a28ce5-e172-4f6d-be7b-7af816723e68.png">
