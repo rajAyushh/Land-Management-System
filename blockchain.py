@@ -4,6 +4,7 @@ import random
 import string
 import datetime
 from typing_extensions import Self
+import random
 import pytz
 from merkleTree import MerkleTreeHash
 
@@ -17,32 +18,7 @@ class Block:
         self.transactionsList = []
         self.witnessList = []
         self.voteCount = []
-
-
-# Function for Registration of a new node
-
-    def registerNode(self):
-        noOfUsers = noOfUsers+1
-#keeps no of users as a variable
-        print("Enter Your Name:")
-        name = input()
-        publicId = name+"_"+str(noOfUsers)
-        print("How many Acres of Land do you have? (As confirmed by Land Authority)")
-        stake = input()
-        propertyId = str(stake) + "grp48".join(random.choices(string.ascii_uppercase + string.digits, k=3))
-        privateKey = publicId+ "group48"
-#hashes a private key such that it contains publicId as an input
-        privKeyHash = hashlib.sha256(privateKey.encode()).hexdigest()
-        print("Your unique ID(public key) is "+publicId)
-        print("Your unique private key is "+privateKey)
-        print("Your unique Property ID is "+propertyId)
-        print("Your Land Stake is "+stake)
-        mycursor.execute(f"""INSERT OR UPDATE INTO witness(publicKey, privateKey, stake, propertyId_1) 
-        values({publicId},
-               {privKeyHash},
-               {stake},
-               {propertyId})""")
-        return
+        
 
 
 # Function for a new transaction between a seller and a buyer
@@ -80,8 +56,9 @@ class Block:
         if (cnt4 == 0):
             print("user not found")
             return
+        
+#checks if propertyId exists
 
-    #check if propertyId exists
         print("Enter the Amount Paid")
         amount = input()
         timestamp = datetime.now(pytz.timezone('Asia / Calcutta'))
@@ -152,14 +129,14 @@ class Block:
         result = mycursor.fetchall()
         for row in result:
             print(f"Your Public Key is: {row[0]}")
-            Block.listPrinter()
             stake = row[2]
+            Block.listPrinter()
             voteNumber = input("Choose your respective candidate")
             self.voteCount[voteNumber] += stake
         maxValue = max(voteNumber)
         maxIndex = voteNumber.index(maxValue)
-        minter = self.witnessList[maxIndex]
-        return minter
+        witness = self.witnessList[maxIndex]
+        return witness
 
     # Function to print the list of witnesses
 
@@ -171,26 +148,66 @@ class Block:
 
 # BLOCK MINTING
 
-    @staticmethod
-    def new_block():
+class NewBlock:
+    
+    def __init__(self):
+        self.timestamp= datetime.now(pytz.timezone('Asia / Calcutta'))
+        self.merkleRoot=Block.merkle_push()
+        self.nonce = random.randint(10000, 99999)
+        
+    def new_block(self):
         ver = ver+1
         if prevBlockHash == 0:
             prevBlockHash = hashlib.sha256("genesisGrp48".encode()).hexdigest()
         block = {
             'version': ver,
-            'timestamp': datetime.now(pytz.timezone('Asia / Calcutta')),
-            'merkelRoot_CurrentBlockHash': Block.merkle_push(),
-            'minter': minter,
-            'prevBlockHash': prevBlockHash,
+            'timestamp': self.timestamp,
+            'merkleRoot': Block.merkle_push(),
+            'nonce': self.nonce,
+            'witness': witness,
+            'prevBlockHash': self.prevBlockHash,
+            'CurrentBlockHash': hashlib.sha256((str(ver)+str(self.timestamp)+str(self.nonce)+self.merkleRoot+prevBlockHash).encode()).hexdigest(),
         }
-        prevBlockHash = getattr(block, 'merkelRoot_CurrentBlockHash')
-        return block
+        prevBlockHash = getattr(block, 'CurrentBlockHash')
+
 
     # Function for printing the block
 
-    def print_block():
-        print("Block Details: "+ block)
+    def print_block(self):
+        print("Block Version: " + getattr(block, 'CurrentBlockHash'))
+        print("Timestamp: ")
+        print("Block Merkle Root: ")
+        print("Block nonce: ")
+        print("Block Previous Block Hash: ")
+        print("Block Witness: ")
+        print("Block Current Block Hash: ")
 
+
+# Function for Registration of a new node
+
+
+def registerNode(self):
+    noOfUsers = noOfUsers+1
+#keeps no of users as a variable
+    print("Enter Your Name:")
+    name = input()
+    publicId = name+"_"+str(noOfUsers)
+    print("How many Acres of Land do you have? (As confirmed by Land Authority)")
+    stake = input()
+    propertyId = str(stake) + "grp48".join(random.choices(string.ascii_uppercase + string.digits, k=3))
+    privateKey = publicId + "group48"
+#hashes a private key such that it contains publicId as an input
+    privKeyHash = hashlib.sha256(privateKey.encode()).hexdigest()
+    print("Your unique ID(public key) is "+publicId)
+    print("Your unique private key is "+privateKey)
+    print("Your Land Stake is "+stake)
+    print("Your unique Property ID is "+propertyId)
+    mycursor.execute(f"""INSERT OR UPDATE INTO witness(publicKey, privateKey, stake, propertyId_1) 
+        values({publicId},
+            {privKeyHash},
+            {stake},
+            {propertyId})""")
+    return
 
 
 # main
@@ -213,7 +230,7 @@ blockchain = []
 noOfUsers = 0
 ver = 0
 prevBlockHash = 0
-minter = ""
+witness = ""
 n = input()
 
 if n == 1:
@@ -229,7 +246,7 @@ elif n == 4:
 elif n == (5 or 6):
     Block.new_transaction()
 elif n == 7:
-    Block.print_block()
+    NewBlock.print_block()
 elif n == 8:
     exit
 elif n == 9:
