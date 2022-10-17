@@ -175,5 +175,31 @@ In such way we keep combining hashes until root is reached, and that hash is ret
 
 <img width="407" alt="image" src="https://user-images.githubusercontent.com/87355361/196225062-24a28ce5-e172-4f6d-be7b-7af816723e68.png">
 
+
+
+## Database management-
+
+### Implemented Via MySQL
+
+
+MySQL provides standards-based drivers for JDBC, ODBC, and .Net enabling developers to build database applications in their language of choice. In addition, a native C library allows developers to embed MySQL directly into their applications.
+
+
+MySQL Connectors provide connectivity to the MySQL server for client programs. APIs provide low-level access to MySQL resources using either the classic MySQL protocol or X Protocol.
+
+
+
+![38417f69-bceb-4a9e-8303-0c5bbfef2255](https://user-images.githubusercontent.com/87355361/196243007-28472a6d-8336-4acb-a8da-e264b777509c.jpg)
+
+
+![cf325b7a-74b1-4837-a11d-c4a895f6b5a6](https://user-images.githubusercontent.com/87355361/196243035-55064487-7f42-471e-9529-6b632d9d90d8.jpg)
+
+
+
+# Thank You
+
+
+
+
  
 
