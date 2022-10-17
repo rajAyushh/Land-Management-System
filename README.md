@@ -23,25 +23,25 @@
 
 
 
-### Basic functionalities of our program-
+## Basic functionalities of our program-
 
-## 1.	Register New User
+### 1.	Register New User
 
-## 2.	View Transaction History
+### 2.	View Transaction History
 
-## 3.	Vote for Witness
+### 3.	Vote for Witness
 
-## 4.	Witness Registration
+### 4.	Witness Registration
 
-## 5.	Buy property
+### 5.	Buy property
 
-## 6.	Sell property
+### 6.	Sell property
 
-## 7.	Mint Block
+### 7.	Mint Block
 
-## 8.	Exit
+### 8.	Exit
 
-## 9.	Clear
+### 9.	Clear
 
 
 
@@ -50,7 +50,7 @@
 
 
 
-#All the methods are properly defined in the Blockchain class of blockchain.py
+# All the methods are properly defined in the Blockchain class of blockchain.py
 
 
  
