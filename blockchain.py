@@ -69,7 +69,7 @@ class Block:
         values({buyerId},
                {sellerId},
                {propertyId},
-               {amount,}
+               {amount},
                {timestamp})""")
         # pushes all of the transaction details into sql MusicMG
         #SQL seller ki propID se buyerID 
