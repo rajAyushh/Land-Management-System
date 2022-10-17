@@ -80,6 +80,14 @@ Here, in DPoS ,user's vote weight is proportional to their stake rather than blo
 <img width="435" alt="image" src="https://user-images.githubusercontent.com/87355361/196222815-37b13057-657f-4f68-b255-258c9a56e05b.png">
 
 
+## Vote for Witness
+
+
+
+<img width="611" alt="Screenshot 2022-10-17 at 10 36 55 PM" src="https://user-images.githubusercontent.com/87355361/196239793-9027bd60-3d8b-446c-8560-08fa8b285f48.png">
+
+
+
  
 ●	A simple program to print the list of all witnessess.
 
@@ -112,7 +120,6 @@ Here, in DPoS ,user's vote weight is proportional to their stake rather than blo
 
 
  <img width="468" alt="image" src="https://user-images.githubusercontent.com/87355361/196223089-8918e992-dfb5-4e5a-8f0c-2e5f1ff02072.png">
- 
  
 
  
