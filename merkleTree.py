@@ -1,5 +1,3 @@
-import hashlib
-
 class MerkleTreeHash(object):
     def __init__(self):
         pass
@@ -24,8 +22,8 @@ class MerkleTreeHash(object):
         secondary = []
     
         for k in [blocks[x:x+2] for x in range(0, len(blocks), 2)]:
-            hasher = hashlib.sha256().encode('utf-8')
-            hasher.update(k[0] + k[1])
+            hasher = hashlib.sha256()
+            hashlib.sha256().update(k[0] + k[1])
             secondary.append(hasher.hexdigest())
         
         if len(secondary) == 1:
@@ -33,24 +31,3 @@ class MerkleTreeHash(object):
         else:
             self.find_merkle_hash(secondary)
             
-            
-            
-if __name__ == '__main__':
-    
-    import uuid
-    file_hashes = []
-    
-    for i in range(0,13):
-        file_hashes.append(str(uuid.uuid4().hex))
-        
-        
-    print( 'Finding the Merkle Tree Hash of {0} random hashes'.format(
-        len(file_hashes)))
-    
-    
-    cls = MerkleTreeHash()
-    mk = cls.find_merkle_hash(file_hashes)
-    print ('Merkel Tree hashes of hashes below is: {0}'.format(mk))
-    print ('...')
-    print (file_hashes)
-    
