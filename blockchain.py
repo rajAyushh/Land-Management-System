@@ -5,7 +5,7 @@ import string
 import datetime
 import pytz
 from pytz import timezone
-from mktreemcc import MerkleTreeHash
+from merkletree import MerkleTreeHash
 
 import mysql.connector
 mydb = mysql.connector.connect(host="localhost", user="raju", passwd="1234", database="land_management")
