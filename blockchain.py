@@ -63,7 +63,7 @@ class Block:
         print("Enter the Amount Paid")
         amount = input()
         timestamp = datetime.now(pytz.timezone('Asia / Calcutta'))
-        transactionList.append(Block.transactionHashCalculator(self, buyerId, sellerId, propertyId, amount, timestamp))
+        self.transactionsList.append(Block.transactionHashCalculator(self, buyerId, sellerId, propertyId, amount, timestamp))
         #seller id SQL se nikalo Buyer Id me propID daalo and stake delete karo
         mycursor.execute(f"""INSERT INTO transactions(buyer, seller, property_id, timestamp) 
         values({buyerId},
@@ -82,9 +82,9 @@ class Block:
     
 
 # Function to push hashed transaction list into MerkleTree code    
-    def merkle_push(transactionList):
+    def merkle_push(transactionsList):
         cls = MerkleTreeHash
-        mk = cls.find_merkle_tree(transactionList)
+        mk = cls.find_merkle_tree(transactionsList)
         return mk
     
     
@@ -179,7 +179,6 @@ noOfUsers = 0
 ver = 0
 prevBlockHash = 0
 minter=""
-transactionList=[]
 n = input()
 
 if n == 1:
