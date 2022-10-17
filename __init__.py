@@ -1,1 +1,1 @@
-# File to initialize and vsalidate Python files in the code
+# File to initialize and validate Python files in the code
