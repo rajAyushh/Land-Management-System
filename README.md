@@ -72,7 +72,7 @@ Here, in DPoS ,user's vote weight is proportional to their stake rather than blo
 # Implementation of DPoS in Land Management System's Blockchain
 
 
-●	Implemented the option to be a witness if the user wants (DPOS)
+●	Implemented the option to be a witness if the user wants (DPOS). 
   We ask the user if they wish to be a witness and if so, then we add their name in a list and initialise a VoteCount list where we put
   0 votes for each one.
 
@@ -82,6 +82,8 @@ Here, in DPoS ,user's vote weight is proportional to their stake rather than blo
 
 ## Vote for Witness
 
+● We traverse through the entire list to ask for votes from stakeholders by confirming their public IDs and then asking for their votes. 
+  According to their stakes we append the votecount for each stakeholder.
 
 
 <img width="611" alt="Screenshot 2022-10-17 at 10 36 55 PM" src="https://user-images.githubusercontent.com/87355361/196239793-9027bd60-3d8b-446c-8560-08fa8b285f48.png">
