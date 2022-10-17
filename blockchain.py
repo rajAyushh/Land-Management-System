@@ -5,12 +5,12 @@ import string
 import datetime
 import pytz
 from pytz import timezone
+from mktreemcc import MerkleTreeHash
+
 import mysql.connector
 mydb = mysql.connector.connect(host="localhost", user="raju", passwd="1234", database="land_management")
 mycursor = mydb.cursor()
-# new user wallet generator public/private key
-#send and recieve
-# transaction addition to block
+
 
 
 class Block:
@@ -23,9 +23,8 @@ class Block:
         # Create genesis block
         self.create_block(0, '00')
 
-    # def verify_transaction_signature(self, sender_address, signature, transaction):
-        # DPOS use karna hai
 
+# Function for Registration of a new node
     def registerNode(self):
         noOfUsers = noOfUsers+1
         print("Enter Your Name:")
@@ -44,24 +43,8 @@ class Block:
         print("Your Land Stake is "+stake)
         return
 
-    def registerForWitness(self):
-        witnessList = []
-        voteCount = []
-        # edit winess field in mysql everytime function called
-        for x in range(1, noOfUsers):
-            reg = input("Do you want to be a Witness? {0 for No/ any other for yes}")
-            
-            if reg == 0:
-                continue
-            else:
-                # Enter public ID
-                publicId = input("Enter your Public Key for Witness registration: ")
-                witnessList[x] = publicId
-                voteCount[x] = 0
-                # push yes in witness field in mysql
-        print("Success")
-        return
 
+# Function for a new transaction between a seller and a buyer
     def new_transaction(self):
         # Adds a new transaction to the list of transactions
         print("Enter Buyer ID: ")
@@ -76,10 +59,11 @@ class Block:
         #Check private key hash
         print("Enter Property ID: ")
         propertyId = input()
+        #check if propertyId exists
         print("Enter the Amount Paid")
         amount = input()
         timestamp = datetime.now(pytz.timezone('Asia / Calcutta'))
-        Block.transactionHashCalculator(self, buyerId, sellerId, propertyId, amount, timestamp)
+        transactionList.append(Block.transactionHashCalculator(self, buyerId, sellerId, propertyId, amount, timestamp))
         #seller id SQL se nikalo Buyer Id me propID daalo and stake delete karo
         mycursor.execute(f"""INSERT INTO transactions(buyer, seller, property_id, timestamp) 
         values({buyerId},
@@ -88,12 +72,47 @@ class Block:
                {amount,}
                {timestamp})""")
         # pushes all of the transaction details into sql MusicMG
-        #
+        #SQL seller ki propID se buyerID 
         return
 
+# Hashing the transaction ID to secure the data
     def transactionHashCalculator(self, buyerId, sellerId, propertyId, amount, timestamp):
         transactionStatement = "Group48" + str(buyerId) + str(sellerId) + str(propertyId) + str(amount) + str(timestamp)
         return hashlib.sha256(transactionStatement.encode()).hexdigest()
+    
+
+# Function to push hashed transaction list into MerkleTree code    
+    def merkle_push(transactionList):
+        cls = MerkleTreeHash
+        mk = cls.find_merkle_tree(transactionList)
+        return mk
+    
+    
+    
+# DPoS Implementation
+# We have separate functions Registration of Witness from stakeholders and 
+# Voting for witnesses, so as to find a weighted vote for the witnesses
+    
+    def registerForWitness(self):
+        witnessList = []
+        voteCount = []
+        # edit winess field in mysql everytime function called
+        for x in range(1, noOfUsers):
+            reg = input(
+                "Do you want to be a Witness? {0 for No/ any other for yes}")
+
+            if reg == 0:
+                continue
+            else:
+                # Enter public ID
+                publicId = input(
+                    "Enter your Public Key for Witness registration: ")
+                witnessList[x] = publicId
+                voteCount[x] = 0
+                # push yes in witness field in mysql
+        print("Success")
+        return
+
 
     def voteForWitness(self, witnessList, voteCount):
         for x in range(1, noOfUsers):
@@ -106,6 +125,8 @@ class Block:
         maxIndex = voteNumber.index(maxValue)
         minter = witnessList[maxIndex]
         return minter
+
+    # Function to print the list of witnesses
 
     def listPrinter(self, witnessList):
         for x in range(0, len(witnessList)):
@@ -124,16 +145,25 @@ class Block:
         block = {
             'version': ver,
             'timestamp': datetime.now(pytz.timezone('Asia / Calcutta')),
-            'merkelRoot': """merkel root""",
+            'merkelRoot_CurrentBlockHash': Block.merkle_push(),
             'minter': minter,
             'prevBlockHash': prevBlockHash,
-            'currentBlockHash': merkelRoot,
         }
-        prevBlockHash = currentBlockHash
+        prevBlockHash = getattr(block, 'merkelRoot_CurrentBlockHash')
         return block
 
+    # Function for printing the block
 
-print('''Choose one of the following options: 
+    def print_block():
+        print("Block Version No.: "+ getattr())
+
+
+# main.py
+
+print('''Welcome to Happy Hearts Land management System
+      
+Choose one of the following options: 
+
 1. Register New User
 2. View Transaction History
 3. Vote for Witness
@@ -143,28 +173,27 @@ print('''Choose one of the following options:
 7. Mint Block
 8. Exit
 9. Clear''')
+
 blockchain=[]
 noOfUsers = 0
 ver = 0
 prevBlockHash = 0
 minter=""
+transactionList=[]
 n = input()
+
 if n == 1:
     Block.registerNode()
 elif n == 2:
     mycursor.execute("SELECT * from transactions")
 elif n == 3:
-    # vote fxn
-    pass
+    Block.voteForWitness()
 elif n == 4:
     Block.registerForWitness()
 elif n == (5 or 6):
     Block.new_transaction()
 elif n == 7:
-    blockchain[ver]=Block.new_block(prevBlockHash, ver, merkelRoot)
-    print("Version No." + blockblockbuster)
-    #print block details
-
+    Block.print_block()
 elif n == 8:
     exit
 elif n == 9:
