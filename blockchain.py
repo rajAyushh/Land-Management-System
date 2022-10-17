@@ -30,49 +30,73 @@ class Block:
         print("Enter Your Name:")
         name = input()
         publicId = name+"_"+noOfUsers
-        # code to push name to sql MusicMG
+    # code to push name to sql MusicMG
         print("How many Acres of Land do you have? (As confirmed by Land Authority)")
         stake = input()
         propertyId = stake + "grp48".join(random.choices(string.ascii_uppercase + string.digits, k=3))
         privateKey = publicId+"group48"
         privKeyHash=hashlib.sha256(privateKey.encode()).hexdigest()
-        # code to push propID to sql MusicMG
+    # code to push propID to sql MusicMG
         print("Your unique ID(public key) is "+publicId)
         print("Your unique private key is "+privateKey)
         print("Your unique Property ID is "+propertyId)
         print("Your Land Stake is "+stake)
+        mycursor.execute(f"""INSERT INTO witness(publicKey, privateKey, stake, propertyId_1) 
+        values({publicId},
+               {privKeyHash},
+               {propertyId},
+               {stake,}
+               {propertyId})""")
         return
 
 
 # Function for a new transaction between a seller and a buyer
     def new_transaction(self):
-        # Adds a new transaction to the list of transactions
+    # Adds a new transaction to the list of transactions
         print("Enter Buyer ID: ")
         buyerId = input()
-        # checks if buyer Exists MusicMG
+        cnt1=mycursor.execute("SELECT COUNT(witness.privateId) FROM witness WHERE witness.privateId ='buyerId")
+        if(cnt1==0):
+            print("user not found")
+            return
+        
+    # checks if buyer Exists MusicMG
         print("Enter Seller ID: ")
         sellerId = input()
-        # checks if seller Exists MusicMG
+         cnt2=mycursor.execute("SELECT COUNT(witness.privateId) FROM witness WHERE witness.privateId ='sellerId")
+        if(cnt2==0):
+            print("user not found")
+            return
+        
+    # checks if seller Exists MusicMG
         print("Enter Seller private key: ")
         privateKeyOfSeller = input()
         privateKeyOfSellerHash = hashlib.sha256(privateKeyOfSeller.encode()).hexdigest()
-        #Check private key hash
+        cnt3=  mycursor.execute("SELECT COUNT(witness.privateKey) FROM witness WHERE witness.privateKey ='privateKeyOfSellerHash'")
+        if(cnt3==0):
+            print("user not found")
+            return
+        
+    #Check private key hash
         print("Enter Property ID: ")
         propertyId = input()
-        #check if propertyId exists
+        
+    #check if propertyId exists
         print("Enter the Amount Paid")
         amount = input()
         timestamp = datetime.now(pytz.timezone('Asia / Calcutta'))
         self.transactionsList.append(Block.transactionHashCalculator(self, buyerId, sellerId, propertyId, amount, timestamp))
-        #seller id SQL se nikalo Buyer Id me propID daalo and stake delete karo
+        
+        mycursor.execute("DELETE stake, propertyId FROM witness WHERE publicKey='sellerId'")
+    #here need to add a query that adds the deleted stake and propertyId to buyerID
         mycursor.execute(f"""INSERT INTO transactions(buyer, seller, property_id, timestamp) 
+        
         values({buyerId},
                {sellerId},
                {propertyId},
                {amount},
                {timestamp})""")
-        # pushes all of the transaction details into sql MusicMG
-        #SQL seller ki propID se buyerID 
+    # pushes all of the transaction details into sql MusicMG
         return
 
 # Hashing the transaction ID to secure the data
@@ -96,7 +120,6 @@ class Block:
     def registerForWitness(self):
         witnessList = []
         voteCount = []
-        # edit winess field in mysql everytime function called
         for x in range(1, noOfUsers):
             reg = input(
                 "Do you want to be a Witness? {0 for No/ any other for yes}")
@@ -109,7 +132,6 @@ class Block:
                     "Enter your Public Key for Witness registration: ")
                 witnessList[x] = publicId
                 voteCount[x] = 0
-                # push yes in witness field in mysql
         print("Success")
         return
 
