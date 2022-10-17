@@ -78,15 +78,6 @@ Here, in DPoS ,user's vote weight is proportional to their stake rather than blo
 <img width="435" alt="image" src="https://user-images.githubusercontent.com/87355361/196222815-37b13057-657f-4f68-b255-258c9a56e05b.png">
 
 
-
- 
-●	New transaction dpos implementation-
-
-
-<img width="415" alt="image" src="https://user-images.githubusercontent.com/87355361/196222900-aa78710c-9024-41ea-bfb3-bc923af1f1bc.png">
-
-
-
  
 ●	A simple program to print the list of all witnessess.
 
