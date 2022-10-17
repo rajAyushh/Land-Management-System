@@ -3,99 +3,105 @@ from sqlite3 import Timestamp
 import random
 import string
 import datetime
+from typing_extensions import Self
 import pytz
-from pytz import timezone
-from merkletree import MerkleTreeHash
+from merkleTree import MerkleTreeHash
 
 import mysql.connector
 mydb = mysql.connector.connect(host="localhost", user="raju", passwd="1234", database="land_management")
 mycursor = mydb.cursor()
 
 
-
 class Block:
     def __init__(self):
         self.transactionsList = []
-        self.chain = []
-        self.nodes = set()
-        # Generate random number to be used as node_id
-        self.node_id = "grp48ABCf452"
-        # Create genesis block
-        self.create_block(0, '00')
+        self.witnessList = []
+        self.voteCount = []
 
 
 # Function for Registration of a new node
+
     def registerNode(self):
         noOfUsers = noOfUsers+1
+#keeps no of users as a variable
         print("Enter Your Name:")
         name = input()
-        publicId = name+"_"+noOfUsers
-    # code to push name to sql MusicMG
+        publicId = name+"_"+str(noOfUsers)
         print("How many Acres of Land do you have? (As confirmed by Land Authority)")
         stake = input()
-        propertyId = stake + "grp48".join(random.choices(string.ascii_uppercase + string.digits, k=3))
-        privateKey = publicId+"group48"
-        privKeyHash=hashlib.sha256(privateKey.encode()).hexdigest()
-    # code to push propID to sql MusicMG
+        propertyId = str(stake) + "grp48".join(random.choices(string.ascii_uppercase + string.digits, k=3))
+        privateKey = publicId+ "group48"
+#hashes a private key such that it contains publicId as an input
+        privKeyHash = hashlib.sha256(privateKey.encode()).hexdigest()
         print("Your unique ID(public key) is "+publicId)
         print("Your unique private key is "+privateKey)
         print("Your unique Property ID is "+propertyId)
         print("Your Land Stake is "+stake)
-        mycursor.execute(f"""INSERT INTO witness(publicKey, privateKey, stake, propertyId_1) 
+        mycursor.execute(f"""INSERT OR UPDATE INTO witness(publicKey, privateKey, stake, propertyId_1) 
         values({publicId},
                {privKeyHash},
-               {propertyId},
-               {stake,}
+               {stake},
                {propertyId})""")
         return
 
 
 # Function for a new transaction between a seller and a buyer
+
     def new_transaction(self):
-    # Adds a new transaction to the list of transactions
+        # Adds a new transaction to the list of transactions
         print("Enter Buyer ID: ")
         buyerId = input()
-        cnt1=mycursor.execute("SELECT COUNT(witness.privateId) FROM witness WHERE witness.privateId ='buyerId")
-        if(cnt1==0):
+        cnt1 = mycursor.execute(f"SELECT COUNT(witness.privateId) FROM witness WHERE witness.privateId = {buyerId}")
+        if (cnt1 == 0):
             print("user not found")
             return
-        
-    # checks if buyer Exists MusicMG
+
+# checks if buyer Exists
         print("Enter Seller ID: ")
         sellerId = input()
-         cnt2=mycursor.execute("SELECT COUNT(witness.privateId) FROM witness WHERE witness.privateId ='sellerId")
-        if(cnt2==0):
+        cnt2 = mycursor.execute(f"SELECT COUNT(witness.privateId) FROM witness WHERE witness.privateId = {sellerId}")
+        if (cnt2 == 0):
             print("user not found")
             return
-        
-    # checks if seller Exists MusicMG
+
+# checks if seller Exists
         print("Enter Seller private key: ")
         privateKeyOfSeller = input()
         privateKeyOfSellerHash = hashlib.sha256(privateKeyOfSeller.encode()).hexdigest()
-        cnt3=  mycursor.execute("SELECT COUNT(witness.privateKey) FROM witness WHERE witness.privateKey ='privateKeyOfSellerHash'")
-        if(cnt3==0):
+        cnt3 = mycursor.execute(f"SELECT COUNT(witness.privateKey) FROM witness WHERE witness.privateKey = {privateKeyOfSellerHash}")
+        if (cnt3 == 0):
             print("user not found")
             return
-        
-    #Check private key hash
+
+#Checks private key hash
         print("Enter Property ID: ")
         propertyId = input()
-        
+        cnt4 = mycursor.execute(f"SELECT COUNT(witness.propertyId_1) FROM witness WHERE witness.privateKey = {propertyId}")
+        if (cnt4 == 0):
+            print("user not found")
+            return
+
     #check if propertyId exists
         print("Enter the Amount Paid")
         amount = input()
         timestamp = datetime.now(pytz.timezone('Asia / Calcutta'))
         self.transactionsList.append(Block.transactionHashCalculator(self, buyerId, sellerId, propertyId, amount, timestamp))
-        
-        stake = mycursor.execute("SELECT stake FROM witness WHERE publicKey = 'sellerId'")
-        id1 = mycursor.execute("SELECT propertyId_1 FROM witness WHERE publicKey = 'sellerId'")
-        stake2 = mycursor.execute("SELECT stake FROM witness WHERE publicKey = 'buyerId'")
+
+        stake = mycursor.execute(
+            f"SELECT stake FROM witness WHERE publicKey = {sellerId}")
+        id1 = mycursor.execute(
+            f"SELECT propertyId_1 FROM witness WHERE publicKey = {sellerId}")
+        stake2 = mycursor.execute(
+            f"SELECT stake FROM witness WHERE publicKey = {buyerId}")
         stake += stake2
         # print(stake,id1)
-        mycursor.execute("UPDATE witness SET stake = NULL, propertyId_1 = NULL WHERE publicKey = 'sellerId'")
-        mycursor.execute("UPDATE witness SET stake = 'stake', propertyId_2 = 'id1' WHERE publicKey = 'buyerId'")
-        
-        mycursor.execute("DELETE stake, propertyId FROM witness WHERE publicKey='sellerId'")
+        mycursor.execute(
+            f"UPDATE witness SET stake = NULL, propertyId_1 = NULL WHERE publicKey = {sellerId}")
+        mycursor.execute(
+            f"UPDATE witness SET stake = 'stake', propertyId_2 = 'id1' WHERE publicKey = {buyerId}")
+
+        mycursor.execute(
+            f"DELETE stake, propertyId FROM witness WHERE publicKey = {sellerId}")
         mycursor.execute(f"""INSERT INTO transactions(buyer, seller, property_id, timestamp) 
         
         values({buyerId},
@@ -110,64 +116,63 @@ class Block:
     def transactionHashCalculator(self, buyerId, sellerId, propertyId, amount, timestamp):
         transactionStatement = "Group48" + str(buyerId) + str(sellerId) + str(propertyId) + str(amount) + str(timestamp)
         return hashlib.sha256(transactionStatement.encode()).hexdigest()
-    
 
-# Function to push hashed transaction list into MerkleTree code    
+
+# Function to push hashed transaction list into MerkleTree code
+
     def merkle_push(transactionsList):
         cls = MerkleTreeHash
         mk = cls.find_merkle_tree(transactionsList)
         return mk
-    
-    
-    
+
+
 # DPoS Implementation
-# We have separate functions Registration of Witness from stakeholders and 
+# We have separate functions Registration of Witness from stakeholders and
 # Voting for witnesses, so as to find a weighted vote for the witnesses
-    
+
+
     def registerForWitness(self):
-        witnessList = []
-        voteCount = []
+        key=0
         for x in range(1, noOfUsers):
-            reg = input(
-                "Do you want to be a Witness? {0 for No/ any other for yes}")
+            reg = input("Do you want to be a Witness? {0 for No/ any other for yes}")
 
             if reg == 0:
                 continue
             else:
                 # Enter public ID
-                publicId = input(
-                    "Enter your Public Key for Witness registration: ")
-                witnessList[x] = publicId
-                voteCount[x] = 0
+                publicId = input("Enter your Public Key for Witness registration: ")
+                self.witnessList[key] = publicId
+                self.voteCount[key] = 0
+                key=key+1
         print("Success")
         return
 
-
-    def voteForWitness(self, witnessList, voteCount):
-        for x in range(1, noOfUsers):
-            print("Your Public Key is: "+"SQL se nth bande ki public key")
-            Block.listPrinter(witnessList)
-            stake = "SQL se nth bande ki stake"
+    def voteForWitness(self):
+        mycursor.execute("SELECT * from witness")
+        result = mycursor.fetchall()
+        for row in result:
+            print(f"Your Public Key is: {row[0]}")
+            Block.listPrinter()
+            stake = row[2]
             voteNumber = input("Choose your respective candidate")
-            voteCount[voteNumber] = voteCount[voteNumber]+stake
+            self.voteCount[voteNumber] += stake
         maxValue = max(voteNumber)
         maxIndex = voteNumber.index(maxValue)
-        minter = witnessList[maxIndex]
+        minter = self.witnessList[maxIndex]
         return minter
 
     # Function to print the list of witnesses
 
-    def listPrinter(self, witnessList):
-        for x in range(0, len(witnessList)):
-            print(x+". "+witnessList[x])
+    def listPrinter(self):
+        for x in range(0, len(self.witnessList)):
+            print(x+". "+self.witnessList[x])
         return
 
 
 # BLOCK MINTING
 
-
     @staticmethod
-    def new_block(prevBlockHash, ver, merkelRoot):
+    def new_block():
         ver = ver+1
         if prevBlockHash == 0:
             prevBlockHash = hashlib.sha256("genesisGrp48".encode()).hexdigest()
@@ -184,10 +189,11 @@ class Block:
     # Function for printing the block
 
     def print_block():
-        print("Block Version No.: "+ getattr())
+        print("Block Details: "+ block)
 
 
-# main.py
+
+# main
 
 print('''Welcome to Happy Hearts Land management System
       
@@ -203,17 +209,19 @@ Choose one of the following options:
 8. Exit
 9. Clear''')
 
-blockchain=[]
+blockchain = []
 noOfUsers = 0
 ver = 0
 prevBlockHash = 0
-minter=""
+minter = ""
 n = input()
 
 if n == 1:
     Block.registerNode()
 elif n == 2:
     mycursor.execute("SELECT * from transactions")
+    result = mycursor.fetchall()
+    print(result)
 elif n == 3:
     Block.voteForWitness()
 elif n == 4:
@@ -226,6 +234,7 @@ elif n == 8:
     exit
 elif n == 9:
     mycursor.execute("DELETE from transactions")
+    mycursor.execute("DELETE from witness")
 else:
     print("Kindly choose between 1 to 7")
     exit
