@@ -60,7 +60,7 @@
 
 
 
-#Delegated Proof of Stake (DPoS) algorithm
+# Delegated Proof of Stake (DPoS) algorithm
 
 
 Delegated proof of stake (DPoS) is a verification and consensus mechanism in the blockchain . It competes with other proof of work and proof of stake models as a way to verify transactions and promote blockchain organization.
@@ -69,7 +69,7 @@ Here, in DPoS ,user's vote weight is proportional to their stake rather than blo
 
 
 
-#Implementation of DPoS in Land Management System's Blockchain
+# Implementation of DPoS in Land Management System's Blockchain
 
 
 ●	Implemented the option to be a witness if the user wants (DPOS)
