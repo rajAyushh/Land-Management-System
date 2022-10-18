@@ -3,6 +3,7 @@ from sqlite3 import Timestamp
 import random
 import string
 import datetime
+from this import s
 from typing_extensions import Self
 import random
 import pytz
@@ -12,19 +13,23 @@ import mysql.connector
 mydb = mysql.connector.connect(host="localhost", user="root", passwd="Mysqlpwd@123", database="land_management")
 mycursor = mydb.cursor()
 
-noOfUsers = 0
+mycursor.execute(f"SELECT COUNT(publicKey) FROM witness")
+noOfUsers = mycursor.fetchone()[0]
+blockchain = []
+ver = 0
+prevBlockHash = 0
+witness = ""
 
 class Block:
     def __init__(self):
         self.transactionsList = []
-        self.witnessList = []
-        self.voteCount = []
-        
+        self.witnessList = {}
+        self.maxwitness = ""
 
-
-# Function for a new transaction between a seller and a buyer
+    
 
     def new_transaction(self):
+        '''Function for a new transaction between a seller and a buyer'''
         # Adds a new transaction to the list of transactions
         print("Enter Buyer ID: ")
         buyerId = input()
@@ -110,52 +115,49 @@ class Block:
 
 
     def registerForWitness(self):
-        key=0
-        for x in range(1, noOfUsers):
-            reg = input("Do you want to be a Witness? {0 for No/ any other for yes}")
+        reg = int(input("Do you want to be a Witness? {0 for No/ any other for yes}"))
 
-            if reg == 0:
-                continue
-            else:
-                # Enter public ID
-                publicId = input("Enter your Public Key for Witness registration: ")
-                self.witnessList[key] = publicId
-                self.voteCount[key] = 0
-                key=key+1
-        print("Success")
+        if reg == 0:
+            print("Selected No")
+
+        else:
+            print("Selected Yes")
+            # Enter public ID
+            publicId = input("Enter your Public Key for Witness registration: ")
+            self.witnessList[publicId]=0
+            print("Success")
         return
 
     def voteForWitness(self):
+        global witness
         mycursor.execute("SELECT * from witness")
         result = mycursor.fetchall()
         for row in result:
             print(f"Your Public Key is: {row[0]}")
             stake = row[2]
-            Block.listPrinter()
-            voteNumber = input("Choose your respective candidate")
-            self.voteCount[voteNumber] += stake
-        maxValue = max(voteNumber)
-        maxIndex = voteNumber.index(maxValue)
-        witness = self.witnessList[maxIndex]
-        return witness
+            self.witnessListPrinter()
+            candidate = input("Choose your respective candidate: ")
+            self.witnessList[candidate] += stake
+        self.maxwitness = max(self.witnessList, key= lambda x: self.witnessList[x])
+        print(f"Witness with maximum votes is: {self.maxwitness}")
 
     # Function to print the list of witnesses
 
-    def listPrinter(self):
-        for x in range(0, len(self.witnessList)):
-            print(x+". "+self.witnessList[x])
+    def witnessListPrinter(self):
+        print("Following are the witnesses: ")
+        [print(keys) for keys in self.witnessList]
         return
 
 
 # BLOCK MINTING
 
 class NewBlock:
-    
+
     def __init__(self):
         self.timestamp= datetime.now(pytz.timezone('Asia / Calcutta'))
         self.merkleRoot=Block.merkle_push()
         self.nonce = random.randint(10000, 99999)
-        
+
     def new_block(self):
         ver = ver+1
         if prevBlockHash == 0:
@@ -189,11 +191,10 @@ class NewBlock:
 
 def registerNode():
     global noOfUsers
-    noOfUsers = noOfUsers+1
 #keeps no of users as a variable
     print("Enter Your Name:")
     name = input()
-    publicId = name+"_"+str(noOfUsers)
+    publicId = name+"_"+str(noOfUsers+1)
     print("How many Acres of Land do you have? (As confirmed by Land Authority)")
     stake = input()
     propertyId = str(stake) + "grp48".join(random.choices(string.ascii_uppercase + string.digits, k=3))
@@ -210,10 +211,13 @@ def registerNode():
             {stake},
             '{propertyId}')""")
     mydb.commit()
+    noOfUsers += 1
     return
 
 
 # main
+
+current_block = Block()
 
 print('''Welcome to Happy Hearts Land management System
       
@@ -221,43 +225,38 @@ Choose one of the following options:
 
 1. Register New User
 2. View Transaction History
-3. Vote for Witness
-4. Witness Registration
+3. Witness Registration
+4. Vote for Witness
 5. Buy property
 6. Sell property
 7. Mint Block
 8. Exit
 9. Clear''')
 
-blockchain = []
 
-ver = 0
-prevBlockHash = 0
-witness = ""
-n = input()
-n = int(n)
-print(f"de1 n is {n}")
 
-if n == 1:
-    registerNode()
-elif n == 2:
-    print("Hi")
-    mycursor.execute("SELECT * from transactions")
-    result = mycursor.fetchall()
-    print(result)
-elif n == 3:
-    Block.voteForWitness()
-elif n == 4:
-    Block.registerForWitness()
-elif n == (5 or 6):
-    Block.new_transaction()
-elif n == 7:
-    NewBlock.print_block()
-elif n == 8:
-    exit
-elif n == 9:
-    mycursor.execute("DELETE from transactions")
-    mycursor.execute("DELETE from witness")
-else:
-    print("Kindly choose between 1 to 7")
-    exit
+while True:
+    print("Enter a number between 1 & 9")
+    n = int(input())
+
+    if n == 1:
+        registerNode()
+    elif n == 2:
+        mycursor.execute("SELECT * from transactions")
+        result = mycursor.fetchall()
+        print(result)
+    elif n == 3:
+        current_block.registerForWitness()
+    elif n == 4:
+        current_block.voteForWitness()
+    elif n == (5 or 6):
+        Block.new_transaction()
+    elif n == 7:
+        NewBlock.print_block()
+    elif n == 8:
+        break
+    elif n == 9:
+        mycursor.execute("DELETE from transactions")
+        mycursor.execute("DELETE from witness")
+    else:
+        print("Kindly choose between 1 to 9")
