@@ -9,9 +9,10 @@ import pytz
 from merkleTree import MerkleTreeHash
 
 import mysql.connector
-mydb = mysql.connector.connect(host="localhost", user="raju", passwd="1234", database="land_management")
+mydb = mysql.connector.connect(host="localhost", user="root", passwd="Mysqlpwd@123", database="land_management")
 mycursor = mydb.cursor()
 
+noOfUsers = 0
 
 class Block:
     def __init__(self):
@@ -186,7 +187,8 @@ class NewBlock:
 # Function for Registration of a new node
 
 
-def registerNode(self):
+def registerNode():
+    global noOfUsers
     noOfUsers = noOfUsers+1
 #keeps no of users as a variable
     print("Enter Your Name:")
@@ -202,11 +204,12 @@ def registerNode(self):
     print("Your unique private key is "+privateKey)
     print("Your Land Stake is "+stake)
     print("Your unique Property ID is "+propertyId)
-    mycursor.execute(f"""INSERT OR UPDATE INTO witness(publicKey, privateKey, stake, propertyId_1) 
-        values({publicId},
-            {privKeyHash},
+    mycursor.execute(f"""INSERT INTO witness(publicKey, privateKey, stake, propertyId_1) 
+        values('{publicId}',
+            '{privKeyHash}',
             {stake},
-            {propertyId})""")
+            '{propertyId}')""")
+    mydb.commit()
     return
 
 
@@ -227,15 +230,18 @@ Choose one of the following options:
 9. Clear''')
 
 blockchain = []
-noOfUsers = 0
+
 ver = 0
 prevBlockHash = 0
 witness = ""
 n = input()
+n = int(n)
+print(f"de1 n is {n}")
 
 if n == 1:
-    Block.registerNode()
+    registerNode()
 elif n == 2:
+    print("Hi")
     mycursor.execute("SELECT * from transactions")
     result = mycursor.fetchall()
     print(result)
