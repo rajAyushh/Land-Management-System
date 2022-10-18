@@ -1,13 +1,10 @@
 import hashlib
-from sqlite3 import Timestamp
 import random
 import string
 from datetime import datetime
-from this import s
-from typing_extensions import Self
 import random
-import pytz
 from merkleTree import MerkleTreeHash
+import uuid
 
 import mysql.connector
 mydb = mysql.connector.connect(host="localhost", user="root", passwd="Mysqlpwd@123", database="land_management")
@@ -71,33 +68,34 @@ class Block:
 
         print("Enter the Amount Paid")
         amount = input()
-        timestamp = datetime.now(pytz.timezone('Asia / Calcutta'))
-        self.transactionsList.append(self.transactionHashCalculator(self, buyerId, sellerId, propertyId, amount, timestamp))
+        timestamp = datetime.now()
+        self.transactionsList.append(self.transactionHashCalculator(buyerId, sellerId, propertyId, amount, timestamp))
 
         mycursor.execute(
             f"SELECT stake FROM witness WHERE publicKey = '{sellerId}'")
         stake = mycursor.fetchone()[0]
+        print(f"stake : {stake}")
         mycursor.execute(
             f"SELECT propertyId_1 FROM witness WHERE publicKey = '{sellerId}'")
         id1 = mycursor.fetchone()[0]
         mycursor.execute(
             f"SELECT stake FROM witness WHERE publicKey = '{buyerId}'")
         stake2 = mycursor.fetchone()[0]
-        stake += stake2
-        # print(stake,id1)
+        print(f"stake2 : {stake2}")
+        stake = stake + stake2
         mycursor.execute(
             f"UPDATE witness SET stake = NULL, propertyId_1 = NULL WHERE publicKey = '{sellerId}'")
-        mycursor.execute(
-            f"UPDATE witness SET stake = 'stake', propertyId_2 = 'id1' WHERE publicKey = '{buyerId}'")
+        #mycursor.execute(
+          #  f"UPDATE witness SET stake = 'stake', propertyId_2 = 'id1' WHERE publicKey = '{buyerId}'")
+        transaction_id = uuid.uuid1()
 
-        mycursor.execute(
-            f"DELETE stake, propertyId FROM witness WHERE publicKey = '{sellerId}'")
-        mycursor.execute(f"""INSERT INTO transactions(buyer, seller, property_id, amount, timestamp) 
-        values({buyerId},
-               {sellerId},
-               {propertyId},
-               {amount},
-               {timestamp})""")
+        mycursor.execute(f"""INSERT INTO transactions(transaction_id, buyer, seller, propertyId_1, amount) 
+        values('{transaction_id}',
+            '{buyerId}',
+            '{sellerId}',
+            '{propertyId}',
+            {amount})""")
+        mydb.commit()
     # pushes all of the transaction details into sql MusicMG
         return
 
@@ -154,13 +152,15 @@ class Block:
         [print(keys) for keys in self.witnessList]
         return
 
+    def print_block(self):
+        print("Block has been minted")
 
 # BLOCK MINTING
 
 class NewBlock:
 
     def __init__(self):
-        self.timestamp= datetime.now(pytz.timezone('Asia / Calcutta'))
+        self.timestamp= datetime.now()
         self.merkleRoot=Block.merkle_push()
         self.nonce = random.randint(10000, 99999)
 
@@ -184,12 +184,12 @@ class NewBlock:
 
     def print_block(self):
         print("Block Version: " + getattr(block, 'CurrentBlockHash'))
-        print("Timestamp: ")
-        print("Block Merkle Root: ")
-        print("Block nonce: ")
-        print("Block Previous Block Hash: ")
-        print("Block Witness: ")
-        print("Block Current Block Hash: ")
+        print("Timestamp: "+ getattr(block, 'CurrentBlockHash'))
+        print("Block Merkle Root: "+ getattr(block, 'CurrentBlockHash'))
+        print("Block nonce: "+ getattr(block, 'CurrentBlockHash'))
+        print("Block Previous Block Hash: "+ getattr(block, 'CurrentBlockHash'))
+        print("Block Witness: "+ getattr(block, 'CurrentBlockHash'))
+        print("Block Current Block Hash: "+ getattr(block, 'CurrentBlockHash'))
 
 
 # Function for Registration of a new node
@@ -258,7 +258,7 @@ while True:
     elif n == (5 or 6):
         current_block.new_transaction()
     elif n == 7:
-        NewBlock.print_block()
+        current_block.print_block()
     elif n == 8:
         break
     elif n == 9:
