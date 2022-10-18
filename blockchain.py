@@ -2,7 +2,7 @@ import hashlib
 from sqlite3 import Timestamp
 import random
 import string
-import datetime
+from datetime import datetime
 from this import s
 from typing_extensions import Self
 import random
@@ -18,7 +18,7 @@ noOfUsers = mycursor.fetchone()[0]
 blockchain = []
 ver = 0
 prevBlockHash = 0
-witness = ""
+minter = ""
 
 class Block:
     def __init__(self):
@@ -33,7 +33,8 @@ class Block:
         # Adds a new transaction to the list of transactions
         print("Enter Buyer ID: ")
         buyerId = input()
-        cnt1 = mycursor.execute(f"SELECT COUNT(witness.privateId) FROM witness WHERE witness.privateId = {buyerId}")
+        mycursor.execute(f"SELECT COUNT(witness.privateKey) FROM witness WHERE publicKey = '{buyerId}'")
+        cnt1 = mycursor.fetchone()[0]
         if (cnt1 == 0):
             print("user not found")
             return
@@ -41,7 +42,8 @@ class Block:
 # checks if buyer Exists
         print("Enter Seller ID: ")
         sellerId = input()
-        cnt2 = mycursor.execute(f"SELECT COUNT(witness.privateId) FROM witness WHERE witness.privateId = {sellerId}")
+        mycursor.execute(f"SELECT COUNT(witness.privateKey) FROM witness WHERE publicKey = '{sellerId}'")
+        cnt2 = mycursor.fetchone()[0]
         if (cnt2 == 0):
             print("user not found")
             return
@@ -50,7 +52,8 @@ class Block:
         print("Enter Seller private key: ")
         privateKeyOfSeller = input()
         privateKeyOfSellerHash = hashlib.sha256(privateKeyOfSeller.encode()).hexdigest()
-        cnt3 = mycursor.execute(f"SELECT COUNT(witness.privateKey) FROM witness WHERE witness.privateKey = {privateKeyOfSellerHash}")
+        mycursor.execute(f"SELECT COUNT(witness.privateKey) FROM witness WHERE witness.privateKey = '{privateKeyOfSellerHash}'")
+        cnt3 = mycursor.fetchone()[0]
         if (cnt3 == 0):
             print("user not found")
             return
@@ -58,7 +61,8 @@ class Block:
 #Checks private key hash
         print("Enter Property ID: ")
         propertyId = input()
-        cnt4 = mycursor.execute(f"SELECT COUNT(witness.propertyId_1) FROM witness WHERE witness.privateKey = {propertyId}")
+        mycursor.execute(f"SELECT COUNT(witness.propertyId_1) FROM witness WHERE witness.propertyId_1 = '{propertyId}'")
+        cnt4 = mycursor.fetchone()[0]
         if (cnt4 == 0):
             print("user not found")
             return
@@ -68,25 +72,27 @@ class Block:
         print("Enter the Amount Paid")
         amount = input()
         timestamp = datetime.now(pytz.timezone('Asia / Calcutta'))
-        self.transactionsList.append(Block.transactionHashCalculator(self, buyerId, sellerId, propertyId, amount, timestamp))
+        self.transactionsList.append(self.transactionHashCalculator(self, buyerId, sellerId, propertyId, amount, timestamp))
 
-        stake = mycursor.execute(
-            f"SELECT stake FROM witness WHERE publicKey = {sellerId}")
-        id1 = mycursor.execute(
-            f"SELECT propertyId_1 FROM witness WHERE publicKey = {sellerId}")
-        stake2 = mycursor.execute(
-            f"SELECT stake FROM witness WHERE publicKey = {buyerId}")
+        mycursor.execute(
+            f"SELECT stake FROM witness WHERE publicKey = '{sellerId}'")
+        stake = mycursor.fetchone()[0]
+        mycursor.execute(
+            f"SELECT propertyId_1 FROM witness WHERE publicKey = '{sellerId}'")
+        id1 = mycursor.fetchone()[0]
+        mycursor.execute(
+            f"SELECT stake FROM witness WHERE publicKey = '{buyerId}'")
+        stake2 = mycursor.fetchone()[0]
         stake += stake2
         # print(stake,id1)
         mycursor.execute(
-            f"UPDATE witness SET stake = NULL, propertyId_1 = NULL WHERE publicKey = {sellerId}")
+            f"UPDATE witness SET stake = NULL, propertyId_1 = NULL WHERE publicKey = '{sellerId}'")
         mycursor.execute(
-            f"UPDATE witness SET stake = 'stake', propertyId_2 = 'id1' WHERE publicKey = {buyerId}")
+            f"UPDATE witness SET stake = 'stake', propertyId_2 = 'id1' WHERE publicKey = '{buyerId}'")
 
         mycursor.execute(
-            f"DELETE stake, propertyId FROM witness WHERE publicKey = {sellerId}")
-        mycursor.execute(f"""INSERT INTO transactions(buyer, seller, property_id, timestamp) 
-        
+            f"DELETE stake, propertyId FROM witness WHERE publicKey = '{sellerId}'")
+        mycursor.execute(f"""INSERT INTO transactions(buyer, seller, property_id, amount, timestamp) 
         values({buyerId},
                {sellerId},
                {propertyId},
@@ -129,7 +135,7 @@ class Block:
         return
 
     def voteForWitness(self):
-        global witness
+        global minter
         mycursor.execute("SELECT * from witness")
         result = mycursor.fetchall()
         for row in result:
@@ -138,8 +144,8 @@ class Block:
             self.witnessListPrinter()
             candidate = input("Choose your respective candidate: ")
             self.witnessList[candidate] += stake
-        self.maxwitness = max(self.witnessList, key= lambda x: self.witnessList[x])
-        print(f"Witness with maximum votes is: {self.maxwitness}")
+        minter = max(self.witnessList, key= lambda x: self.witnessList[x])
+        print(f"Witness with maximum votes is: {minter}")
 
     # Function to print the list of witnesses
 
@@ -167,7 +173,7 @@ class NewBlock:
             'timestamp': self.timestamp,
             'merkleRoot': Block.merkle_push(),
             'nonce': self.nonce,
-            'witness': witness,
+            'witness': minter,
             'prevBlockHash': self.prevBlockHash,
             'CurrentBlockHash': hashlib.sha256((str(ver)+str(self.timestamp)+str(self.nonce)+self.merkleRoot+prevBlockHash).encode()).hexdigest(),
         }
@@ -250,7 +256,7 @@ while True:
     elif n == 4:
         current_block.voteForWitness()
     elif n == (5 or 6):
-        Block.new_transaction()
+        current_block.new_transaction()
     elif n == 7:
         NewBlock.print_block()
     elif n == 8:
